@@ -24,7 +24,7 @@ const PostList = () => {
                 <select
                     value={sortType}
                     onChange={(e) => {
-                        setSortType(e.target.value as any);
+                        setSortType(e.target.value as typeof sortType);
                         setHasUserSorted(true);
                     }}
                     className="border px-2 py-1 rounded"

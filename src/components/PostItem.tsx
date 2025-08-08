@@ -7,8 +7,9 @@ import CommentForm from "./CommentForm";
 import CommentList from "./CommentsList";
 import { refreshPosts } from "@/src/lib/posts";
 import Link from "next/link";
+import {Post} from "@/src/types";
 
-const PostItem = ({ post }: { post: any }) => {
+const PostItem = ({ post }: { post: Post }) => {
     const { updatePost, deletePost } = usePostStore();
 
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);

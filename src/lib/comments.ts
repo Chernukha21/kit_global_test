@@ -8,7 +8,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./firestore";
 
-// Add a comment to a post
+
 export const addCommentToPost = async (
     postId: string,
     comment: { author: string; content: string }
@@ -20,7 +20,7 @@ export const addCommentToPost = async (
     });
 };
 
-// Get comments for a post
+
 export const getCommentsForPost = async (postId: string) => {
     const q = query(
         collection(db, "posts", postId, "comments"),

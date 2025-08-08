@@ -1,9 +1,9 @@
-import { getDoc, doc } from "firebase/firestore";
-import { db } from "@/src/lib/firestore";
-import { getCommentsForPost } from "@/src/lib/comments";
+import {doc, getDoc} from "firebase/firestore";
+import {db} from "@/src/lib/firestore";
 import CommentForm from "@/src/components/CommentForm";
 import CommentList from "@/src/components/CommentsList";
 import Link from "next/link";
+import {Post} from "@/src/types";
 
 export default async function PostDetailPage({ params }: { params: { id: string } }) {
     const postId = params.id;
@@ -15,7 +15,7 @@ export default async function PostDetailPage({ params }: { params: { id: string 
         return <div className="p-4">Post not found</div>;
     }
 
-    const post = { id: postDoc.id, ...postDoc.data() } as any;
+    const post = { id: postDoc.id, ...postDoc.data() } as Post;
 
     return (
         <div className="max-w-2xl mx-auto p-4">
