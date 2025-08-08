@@ -5,11 +5,13 @@ import CommentList from "@/src/components/CommentsList";
 import Link from "next/link";
 import {Post} from "@/src/types";
 
-export default async function PostDetailPage({ params }: { params: { id: string } }) {
-    const postId = params.id;
+export default async function PostDetailPage({ params }: {
+    params: Promise<{ id: string }>;
+}) {
+    const { id } = await params;
 
 
-    const postDoc = await getDoc(doc(db, "posts", postId));
+    const postDoc = await getDoc(doc(db, "posts", id));
 
     if (!postDoc.exists()) {
         return <div className="p-4">Post not found</div>;
@@ -25,8 +27,8 @@ export default async function PostDetailPage({ params }: { params: { id: string 
             <p className="text-gray-700 mb-6">{post.content}</p>
 
             <h2 className="text-lg font-semibold mb-2">Comments</h2>
-            <CommentForm postId={postId} />
-            <CommentList postId={postId} />
+            <CommentForm postId={id} />
+            <CommentList postId={id} />
         </div>
     );
 }

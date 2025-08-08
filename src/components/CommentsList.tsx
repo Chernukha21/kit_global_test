@@ -19,7 +19,7 @@ export default function CommentList({ postId }: Props) {
 
     useEffect(() => {
         loadComments();
-    }, [postId, loadComments]);
+    }, [postId]);
 
     return (
         <div className="mt-4">
