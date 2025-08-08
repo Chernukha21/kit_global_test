@@ -1,36 +1,181 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📝 Single Page Blog App
 
-## Getting Started
+A simple blog platform built with **Next.js 15**, **Firebase Firestore**, **Zustand**, **SWR**, **Zod**, and **Tailwind CSS**. Users can:
 
-First, run the development server:
+- View all blog posts
+- Create new posts
+- Edit and delete posts
+- Add comments to posts
+- View detailed post pages with comments
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ⚙️ Tech Stack
+
+| Tool              | Purpose                                  |
+|-------------------|-------------------------------------------|
+| **Next.js 15**    | App Router with SSR, CSR, and routing     |
+| **Firebase Firestore** | NoSQL database for posts & comments  |
+| **Zustand**       | State management for posts, sorting, modals |
+| **SWR**           | Data fetching for initial post load       |
+| **Zod**           | Form validation for posts and comments    |
+| **Tailwind CSS**  | Styling framework                         |
+| **React Icons**   | UI icons (edit/delete)
+
+---
+
+## 📁 Project Structure
+
+```
+src/
+├── app/
+│   ├── page.tsx                  # Homepage (all posts)
+│   └── posts/[id]/page.tsx       # Single post detail view
+├── components/
+│   ├── PostList.tsx              # Post sorting + list
+│   ├── PostItem.tsx              # Each post with actions
+│   ├── CommentForm.tsx           # Add comment
+│   ├── CommentList.tsx           # View comments
+│   └── Modal.tsx                 # Reusable modal
+├── store/
+│   └── usePostStore.ts           # Zustand post store
+├── lib/
+│   ├── firestore.ts              # Firebase config
+│   ├── posts.ts                  # Firestore CRUD helpers
+│   └── schemas.ts                # Zod validation schemas
+├── types/
+│   └── index.ts                  # Type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🧠 Firestore Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Collection: `posts`
+```ts
+{
+  id: string;
+  title: string;
+  content: string;
+  createdAt: Timestamp;
+}
+```
 
-## Learn More
+### Subcollection: `posts/{postId}/comments`
+```ts
+{
+  author: string;
+  content: string;
+  createdAt: Timestamp;
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ✅ Blog Posts
+- List posts with optional sorting (newest, oldest, A–Z, Z–A)
+- Create a new post (Zod validation)
+- Edit a post (modal)
+- Delete a post (confirmation modal)
 
-## Deploy on Vercel
+### ✅ Comments
+- Add comments with author + content fields
+- View comments per post
+- Comments stored in Firestore under `posts/{id}/comments`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### ✅ Detail View
+- Route: `/posts/[id]`
+- Displays full post content + comments
+- Back link to homepage
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔄 State Management (Zustand)
+
+```ts
+{
+  posts: Post[];
+  setPosts(posts);
+  updatePost(id, partialData);
+  deletePost(id);
+  sortType: 'newest' | 'oldest' | 'az' | 'za';
+  setSortType(type);
+  getSortedPosts();
+}
+```
+
+- State used in `PostList`, `PostItem`, etc.
+- Updated after actions using `refreshPosts()` helper
+
+---
+
+## 🧪 Validation (Zod)
+
+### Post creation schema:
+```ts
+z.object({
+  title: z.string().min(3),
+  content: z.string().min(10),
+})
+```
+
+### Comment schema:
+```ts
+z.object({
+  author: z.string().min(2),
+  content: z.string().min(5),
+})
+```
+
+---
+
+## 🔁 Refresh Strategy
+
+SWR's `mutate()` is not used.  
+Instead, we use:
+
+```ts
+// lib/posts.ts
+export const refreshPosts = async () => {
+  const posts = await getPosts();
+  usePostStore.getState().setPosts(posts);
+};
+```
+
+This guarantees data sync between Firestore and Zustand.
+
+---
+
+## 💡 Future Improvements
+
+- 🔐 Firebase Auth (user-specific posts & comments)
+- 📸 Upload post images via Firebase Storage
+- 📶 Real-time updates via `onSnapshot`
+- 🧭 Pagination using `startAfter + limit`
+- 📄 SEO with `generateMetadata()` in post detail page
+- 🔔 Toast feedback using `react-hot-toast` or similar
+
+---
+
+## 🛠 Getting Started
+
+1. Clone the repo
+2. Set up a Firebase project
+3. Add your Firebase config in `lib/firestore.ts`
+4. Install dependencies:
+```bash
+npm install
+```
+
+5. Run dev server:
+```bash
+npm run dev
+```
+
+---
+
+## 🙌 Credits
+
+Created by [Your Name] as a test task / blog showcase.
