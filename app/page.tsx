@@ -18,7 +18,7 @@ export default function HomePage() {
         }
     }, [posts, setPosts]);
 
-    if (isLoading) return <Loading extraClasses="fixed top-1/2 left-1/2 w-10 h-10" />;
+    if (isLoading) return <Loading color="text-[#3B82F6]" extraClasses="fixed top-1/2 left-1/2 w-10 h-10" />;
     if (!posts && error) return <p>Failed to load posts.</p>;
 
     return (

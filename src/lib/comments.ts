@@ -1,36 +1,55 @@
 import {
-    addDoc,
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    serverTimestamp,
+    addDoc, collection, getDocs, orderBy, query, serverTimestamp,
+    Timestamp,
 } from "firebase/firestore";
 import { db } from "./firestore";
+import { Comment } from "@/src/types";
+import { pickCreatedISO } from "@/src/lib/time";
 
-
-export const addCommentToPost = async (
-    postId: string,
-    comment: { author: string; content: string }
-) => {
-    const commentsRef = collection(db, "posts", postId, "comments");
-    await addDoc(commentsRef, {
-        ...comment,
-        createdAt: serverTimestamp(),
-    });
+type CommentDoc = {
+    author: string;
+    content: string;
+    createdAt?: Timestamp | null;
+    createdAtClient?: Timestamp | null;
 };
 
+export async function addCommentToPost(
+    postId: string,
+    comment: { author: string; content: string }
+): Promise<Comment> {
+    const clientDate = new Date();
 
-export const getCommentsForPost = async (postId: string) => {
+    await addDoc(collection(db, "posts", postId, "comments"), {
+        author: comment.author,
+        content: comment.content,
+        createdAt: serverTimestamp(),
+        createdAtClient: clientDate,
+    });
+
+    return {
+        id: crypto.randomUUID?.() ?? `${Date.now()}`,
+        author: comment.author,
+        content: comment.content,
+        createdAt: clientDate.toISOString(),
+    };
+}
+
+export async function getCommentsForPost(postId: string): Promise<Comment[]> {
     const q = query(
         collection(db, "posts", postId, "comments"),
         orderBy("createdAt", "desc")
     );
 
-    const snapshot = await getDocs(q);
+    const snap = await getDocs(q);
 
-    return snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-    }));
-};
+    return snap.docs.map((d) => {
+        const x = d.data() as CommentDoc;
+
+        return {
+            id: d.id,
+            author: x.author ?? "",
+            content: x.content ?? "",
+            createdAt: pickCreatedISO(x),
+        };
+    });
+}

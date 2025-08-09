@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from "react";
 import { getCommentsForPost } from "@/src/lib/comments";
+import { Comment } from "@/src/types";
+import Loading from "@/src/components/Loading";
 
 type Props = {
     postId: string;
 };
 
 export default function CommentList({ postId }: Props) {
-    const [comments, setComments] = useState<any[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(true);
 
     const loadComments = async () => {
@@ -18,13 +20,14 @@ export default function CommentList({ postId }: Props) {
     };
 
     useEffect(() => {
-        loadComments();
+       void loadComments();
     }, [postId]);
+
 
     return (
         <div className="mt-4">
             <h4 className="font-semibold mb-2">Comments</h4>
-            {loading && <p>Loading comments...</p>}
+            {loading && <Loading/>}
             {!loading && comments.length === 0 && <p>No comments yet.</p>}
             <ul className="space-y-2">
                 {comments.map((comment) => (

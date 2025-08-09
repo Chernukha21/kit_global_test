@@ -1,6 +1,7 @@
 'use client';
 import { useState } from "react";
 import { addCommentToPost } from "@/src/lib/posts";
+import Loading from "@/src/components/Loading";
 
 type Props = {
     postId: string;
@@ -43,7 +44,7 @@ export default function CommentForm({ postId, onCommentAdded }: Props) {
                 disabled={loading}
                 className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
             >
-                {loading ? "Posting..." : "Comment"}
+                {loading ? <Loading/> : "Comment"}
             </button>
         </form>
     );
